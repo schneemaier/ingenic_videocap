@@ -18,7 +18,7 @@ int FrameSourceEnabled[5] = {0,0,0,0,0};
 IMPRgnHandle osdRegion;
 
 // The general sqlite configuration database
-sqlite3 *db;
+// sqlite3 *db;
 
 int initialize_sensor(IMPSensorInfo *sensor_info)
 {
@@ -760,6 +760,7 @@ void *audio_thread_entry_start(void *audio_thread_params)
 
 
 
+/*
 int sql_camera_profile_callback(void *shared_data, int count, char **data, char **columns)
 {
   int ret, rc;
@@ -807,8 +808,10 @@ int sql_camera_profile_callback(void *shared_data, int count, char **data, char 
     
   return 0;
 }
+*/
 
 // This is the entrypoint for the real time configuration thread
+/*
 void *real_time_configuration_start(void *params)
 {
   sqlite3_stmt *stmt;
@@ -845,7 +848,7 @@ void *real_time_configuration_start(void *params)
 
   sqlite3_close(db);
 }
-
+*/
 
 // This is the entrypoint for the night vision thread
 void *night_vision_entry_start(void *night_vision_thread_params)
