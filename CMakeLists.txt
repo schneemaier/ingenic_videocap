@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.4.3)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
+
 
 # Set the project name
 project(IngenicVideoCapture)
