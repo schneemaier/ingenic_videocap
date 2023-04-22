@@ -13,10 +13,11 @@ extern sig_atomic_t sigint_received;
 extern snd_pcm_t *pcm_handle;
 extern pthread_mutex_t frame_generator_mutex; 
 
-//extern "C" {
+/*
+From https://github.com/geekman/t20-rtspd/issues/5 for the 64MB version
 extern int IMP_OSD_SetPoolSize(int newPoolSize);
 extern int IMP_Encoder_SetPoolSize(int newPoolSize0);
-//}
+*/
 
 // Globals
 int FrameSourceEnabled[5] = {0,0,0,0,0};
@@ -540,8 +541,11 @@ int initialize_osd(int osdLoc)
   int osdGroupNumber = 0;
   IMPOSDGrpRgnAttr grAttrFont;
 
+  /*
+  From https://github.com/geekman/t20-rtspd/issues/5 for the 64MB version
   IMP_OSD_SetPoolSize(0x64000);
   IMP_Encoder_SetPoolSize(0x100000);
+  */
 
   log_info("Initializing on screen display");
 
