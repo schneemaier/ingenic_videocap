@@ -633,6 +633,7 @@ void *timestamp_osd_entry_start(void *timestamp_osd_thread_params)
 
   /*generate time*/
   char DateStr[40];
+  char DateStrPrev[40];
   time_t currTime;
   struct tm *currDate;
   unsigned i = 0, j = 0;
@@ -663,10 +664,11 @@ void *timestamp_osd_entry_start(void *timestamp_osd_thread_params)
 
   timeStampData = malloc(20 * OSD_REGION_HEIGHT * OSD_REGION_WIDTH * 4);
 
-
+  memset(DateStrPrev, 0, 40);
   while(!sigint_received) {
       int penpos_t = 0;
       int fontadv = 0;
+      int changed = 0;
 
       time(&currTime);
       currDate = localtime(&currTime);
@@ -674,40 +676,48 @@ void *timestamp_osd_entry_start(void *timestamp_osd_thread_params)
       // strftime(DateStr, 40, "%Y-%m-%d %H:%M:%S", currDate);
       strftime(DateStr, 40, DateFormat, currDate);
       for (i = 0; i < 20; i++) {
-        switch(DateStr[i]) {
-          case '0' ... '9':
-            dateData = (void *)gBgramap[DateStr[i] - '0'].pdata;
-            fontadv = gBgramap[DateStr[i] - '0'].width;
-            penpos_t += gBgramap[DateStr[i] - '0'].width;
-            break;
-          case '-':
-            dateData = (void *)gBgramap[10].pdata;
-            fontadv = gBgramap[10].width;
-            penpos_t += gBgramap[10].width;
-            break;
-          case ' ':
-            dateData = (void *)gBgramap[11].pdata;
-            fontadv = gBgramap[11].width;
-            penpos_t += gBgramap[11].width;
-            break;
-          case ':':
-            dateData = (void *)gBgramap[12].pdata;
-            fontadv = gBgramap[12].width;
-            penpos_t += gBgramap[12].width;
-            break;
-          default:
-            break;
-        }
+        // Data only needs update if changed
+        if (DateStr[i] != DateStrPrev[i]) {
+          switch(DateStr[i]) {
+            case '0' ... '9':
+              dateData = (void *)gBgramap[DateStr[i] - '0'].pdata;
+              fontadv = gBgramap[DateStr[i] - '0'].width;
+              penpos_t += gBgramap[DateStr[i] - '0'].width;
+              break;
+            case '-':
+              dateData = (void *)gBgramap[10].pdata;
+              fontadv = gBgramap[10].width;
+              penpos_t += gBgramap[10].width;
+              break;
+            case ' ':
+              dateData = (void *)gBgramap[11].pdata;
+              fontadv = gBgramap[11].width;
+              penpos_t += gBgramap[11].width;
+              break;
+            case ':':
+              dateData = (void *)gBgramap[12].pdata;
+              fontadv = gBgramap[12].width;
+              penpos_t += gBgramap[12].width;
+              break;
+            default:
+              break;
+          }
 
-        for (j = 0; j < OSD_REGION_HEIGHT; j++) {
-          memcpy((void *)((uint32_t *)timeStampData + j*20*OSD_REGION_WIDTH + penpos_t),
-              (void *)((uint32_t *)dateData + j*fontadv), fontadv*4);
+          for (j = 0; j < OSD_REGION_HEIGHT; j++) {
+            memcpy((void *)((uint32_t *)timeStampData + j*20*OSD_REGION_WIDTH + penpos_t),
+                (void *)((uint32_t *)dateData + j*fontadv), fontadv*4);
+          }
+          changed = 1
         }
+        DateStrPrev[i] = DateStr[i];
       }
-      rAttrData.picData.pData = timeStampData;
-      IMP_OSD_UpdateRgnAttrData(osdRegion, &rAttrData);
-      // log_info("Updated osdRegion to: %s", DateStr);
-
+      // Only update osdRegion if changed
+      if (changed != 0) {
+        rAttrData.picData.pData = timeStampData;
+        IMP_OSD_UpdateRgnAttrData(osdRegion, &rAttrData);
+        // log_info("Updated osdRegion to: %s", DateStr);
+      }
+      // sleep(1)  will occasionally skip a second on the OSD
       sleep(1);
   }
 
