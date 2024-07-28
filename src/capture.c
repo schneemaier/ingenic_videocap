@@ -707,7 +707,7 @@ void *timestamp_osd_entry_start(void *timestamp_osd_thread_params)
             memcpy((void *)((uint32_t *)timeStampData + j*20*OSD_REGION_WIDTH + penpos_t),
                 (void *)((uint32_t *)dateData + j*fontadv), fontadv*4);
           }
-          changed = 1
+          changed = 1;
         }
         DateStrPrev[i] = DateStr[i];
       }
