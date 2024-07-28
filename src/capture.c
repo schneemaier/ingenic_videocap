@@ -676,28 +676,32 @@ void *timestamp_osd_entry_start(void *timestamp_osd_thread_params)
       // strftime(DateStr, 40, "%Y-%m-%d %H:%M:%S", currDate);
       strftime(DateStr, 40, DateFormat, currDate);
       for (i = 0; i < 20; i++) {
+        // currently all characters have the same width
+        penpos_t += gBgramap[0].width;
         // Data only needs update if changed
         if (DateStr[i] != DateStrPrev[i]) {
+          // currently all characters have the same width
+          fontadv = gBgramap[0].width;
           switch(DateStr[i]) {
             case '0' ... '9':
               dateData = (void *)gBgramap[DateStr[i] - '0'].pdata;
-              fontadv = gBgramap[DateStr[i] - '0'].width;
-              penpos_t += gBgramap[DateStr[i] - '0'].width;
+              //fontadv = gBgramap[DateStr[i] - '0'].width;
+              //penpos_t += gBgramap[DateStr[i] - '0'].width;
               break;
             case '-':
               dateData = (void *)gBgramap[10].pdata;
-              fontadv = gBgramap[10].width;
-              penpos_t += gBgramap[10].width;
+              //fontadv = gBgramap[10].width;
+              //penpos_t += gBgramap[10].width;
               break;
             case ' ':
               dateData = (void *)gBgramap[11].pdata;
-              fontadv = gBgramap[11].width;
-              penpos_t += gBgramap[11].width;
+              //fontadv = gBgramap[11].width;
+              //penpos_t += gBgramap[11].width;
               break;
             case ':':
               dateData = (void *)gBgramap[12].pdata;
-              fontadv = gBgramap[12].width;
-              penpos_t += gBgramap[12].width;
+              //fontadv = gBgramap[12].width;
+              //penpos_t += gBgramap[12].width;
               break;
             default:
               break;
@@ -709,6 +713,11 @@ void *timestamp_osd_entry_start(void *timestamp_osd_thread_params)
           }
           changed = 1;
         }
+        //else
+        //{
+        //  // currently all characters have the same width
+        //  penpos_t += gBgramap[0].width;
+        //}
         DateStrPrev[i] = DateStr[i];
       }
       // Only update osdRegion if changed
